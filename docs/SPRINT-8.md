@@ -1,4 +1,4 @@
-# Sprint 8 — Working with React Props and Component Communication
+# Sprint 8 — Responsive UI using CSS, Flexbox, Grid, and Media Queries
 
 ## Project Information
 - Project: Library Management System
@@ -10,18 +10,18 @@
 
 ## Sprint Overview
 
-In this sprint, students focus on establishing component communication by passing dynamic data from parent components to child components using React Props.
+In this sprint, the Library Management System user interface is made responsive across desktops, tablets, and mobile devices using CSS Flexbox, CSS Grid, and Media Queries.
 
-The application transitions from static mock layouts to parameterized reusable components, enabling headers, cards, tables, and navigation elements to receive and display contextual data dynamically without hardcoded values.
+The application transitions from fixed desktop layouts to adaptive, mobile-responsive viewports, ensuring that the navigation bar, sidebar, dashboard KPI cards, data tables, and circulation forms adjust seamlessly to various screen sizes.
 
 ## Learning Objectives
 
-- Understand the role of Props in React component communication.
-- Pass primitive and non-primitive data types via Props.
-- Implement parent-to-child data flow across application views.
-- Configure reusable components using custom props and children.
-- Separate application data from UI presentation layers.
-- Maintain consistent data passing patterns across all pages.
+- Understand the principles of responsive web design (RWD).
+- Implement responsive multi-column layouts using CSS Grid.
+- Use CSS Flexbox for dynamic content alignment and distribution.
+- Define responsive breakpoints using CSS Media Queries.
+- Build mobile-friendly navigation and collapsible layouts.
+- Test and verify responsive behavior across multiple screen resolutions.
 
 ## Prerequisites
 
@@ -31,33 +31,33 @@ Sprint 1 through Sprint 7 should be completed before starting this sprint.
 
 - Visual Studio Code
 - React
-- React Router
+- CSS / Modern CSS Variables
+- Chrome Browser & DevTools (Device Mode)
 - Git
 - GitHub
-- Chrome Browser
 
 ## Concepts Covered
 
-- React Props
-- Parent-to-Child Communication
-- Unidirectional Data Flow
-- Component Parameterization
-- Dynamic Props Rendering
-- Children Prop
-- Default Props and Destructuring
+- Responsive Web Design (RWD)
+- CSS Flexbox (Flexible Box Layout)
+- CSS Grid Layout (`repeat`, `auto-fit`, `minmax`)
+- CSS Media Queries (`@media`)
+- Responsive Breakpoints (Desktop, Tablet, Mobile)
+- Fluid Typography and Spacing
+- Mobile-First Layout Patterns
 
 ## Practical Tasks
 
-1. Define prop contracts for reusable UI components.
-2. Pass dynamic titles, subtitles, and badges using Props.
-3. Parameterize the Card component to accept dynamic content and actions.
-4. Parameterize the Button component to support variants and sizes.
-5. Pass collection data to display tables on catalog and member pages.
-6. Render child elements dynamically using the children prop.
-7. Test prop passing and rendering across all application routes.
-8. Verify component consistency and absence of hardcoded values.
+1. Define responsive viewport settings and CSS breakpoint variables.
+2. Implement responsive grid layouts for dashboard metric cards.
+3. Configure flexible layouts for the navigation bar, sidebar, and footer.
+4. Implement CSS Media Queries for tablet (<=1024px) and mobile (<=768px, <=480px).
+5. Ensure data tables support responsive horizontal scrolling on small screens.
+6. Make book catalog, borrowing, and fine forms adaptive to mobile screens.
+7. Test the application across desktop, tablet, and mobile device viewports.
+8. Verify layout consistency without horizontal overflow or overlapping content.
 9. Push the completed sprint to GitHub.
 
 ## Result
 
-The Library Management System frontend establishes clean parent-to-child communication using React Props, enabling reusable components to dynamically display distinct data across all pages while maintaining unidirectional data flow.
+The Library Management System frontend provides a fully responsive user interface utilizing CSS Flexbox, CSS Grid, and Media Queries, delivering an optimal user experience across desktop, tablet, and mobile devices.
