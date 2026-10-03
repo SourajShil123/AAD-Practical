@@ -19,6 +19,7 @@ The Library Management System is a full-stack MERN web application designed to m
 - **Sprint 7 — Reusable Components and Application Layout:** Core UI components (`Button`, `Card`, `PageTitle`), Main & Auth layouts.
 - **Sprint 8 — Responsive UI using CSS, Flexbox, Grid, and Media Queries:** Responsive multi-column grid layouts, flexible containers, and media query breakpoints for desktop, tablet, and mobile.
 - **Sprint 9 — Working with React State, Props, and Event Handling:** Dynamic data flow via Props, component state with `useState`, user event handling (`onClick`, `onChange`), dynamic rendering, and conditional UI branches.
+- **Sprint 10 — Building Forms, Controlled Components, and Client-Side Validation:** Controlled form components, form state synchronization, client-side validation rules, user feedback, and form resetting.
 
 ---
 
@@ -30,10 +31,10 @@ The Library Management System is a full-stack MERN web application designed to m
 - **Conditional Rendering:** Authenticated administrator mode vs. guest view banners, alert drawer toggling, and contextual empty-state messages for zero-result table queries.
 - **Component Enhancements:** Extended `Button.jsx`, `Card.jsx`, and `PageTitle.jsx` with active states, collapsibility, badges, and responsive layouts.
 
-Detailed documentation for Sprint 9 is available in:
-- [`docs/SPRINT-9.md`](./docs/SPRINT-9.md)
-- [`docs/state-and-props.md`](./docs/state-and-props.md)
-- [`docs/event-handling-and-conditional-rendering.md`](./docs/event-handling-and-conditional-rendering.md)
+Detailed documentation files for all sprints are available in:
+- [`docs/SPRINT-8.md`](./docs/SPRINT-8.md) & [`docs/responsive-design.md`](./docs/responsive-design.md)
+- [`docs/SPRINT-9.md`](./docs/SPRINT-9.md), [`docs/state-management.md`](./docs/state-management.md), [`docs/event-handling.md`](./docs/event-handling.md)
+- [`docs/SPRINT-10.md`](./docs/SPRINT-10.md) & [`docs/forms-and-validation.md`](./docs/forms-and-validation.md)
 
 ---
 

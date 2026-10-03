@@ -3,50 +3,143 @@ import PageTitle from '../../components/ui/PageTitle';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import { BookOpen, Plus, Search, Filter, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { initialBooks as defaultBooks } from '../../data/mockData';
+import {
+  BookOpen,
+  Plus,
+  Search,
+  Filter,
+  AlertTriangle,
+  CheckCircle,
+  X,
+  RotateCcw,
+  BookMarked,
+} from 'lucide-react';
 
-const initialBooks = [
-  { id: 'BK-101', title: 'Clean Code', author: 'Robert C. Martin', category: 'Software Engineering', isbn: '978-0132350884', copies: 5, available: 3 },
-  { id: 'BK-102', title: 'Introduction to Algorithms', author: 'Thomas H. Cormen', category: 'Computer Science', isbn: '978-0262033848', copies: 8, available: 2 },
-  { id: 'BK-103', title: 'Design Patterns: Elements of Reusable Object-Oriented Software', author: 'Erich Gamma et al.', category: 'Software Engineering', isbn: '978-0201633610', copies: 4, available: 4 },
-  { id: 'BK-104', title: 'JavaScript: The Good Parts', author: 'Douglas Crockford', category: 'Web Development', isbn: '978-0596517748', copies: 6, available: 1 },
-  { id: 'BK-105', title: 'Database System Concepts', author: 'Abraham Silberschatz', category: 'Database Systems', isbn: '978-0078022159', copies: 7, available: 5 },
-  { id: 'BK-106', title: 'Artificial Intelligence: A Modern Approach', author: 'Stuart Russell & Peter Norvig', category: 'Artificial Intelligence', isbn: '978-0136042594', copies: 3, available: 0 },
+const CATEGORIES = [
+  'All',
+  'Software Engineering',
+  'Computer Science',
+  'Web Development',
+  'Database Systems',
+  'Artificial Intelligence',
+  'Distributed Systems',
+  'Networking',
 ];
 
+const INITIAL_FORM_STATE = {
+  title: '',
+  author: '',
+  category: 'Software Engineering',
+  isbn: '',
+  copies: '',
+  publishedYear: '',
+};
+
 export default function Books() {
-  const [booksList, setBooksList] = useState(initialBooks);
+  const [booksList, setBooksList] = useState(defaultBooks);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newTitle, setNewTitle] = useState('');
-  const [newAuthor, setNewAuthor] = useState('');
-  const [newCategory, setNewCategory] = useState('Software Engineering');
-  const [newCopies, setNewCopies] = useState(5);
-  const [notification, setNotification] = useState('');
 
-  const categories = ['All', 'Software Engineering', 'Computer Science', 'Web Development', 'Database Systems', 'Artificial Intelligence'];
+  // Exercise 2: Controlled Component Form State
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+  const [formErrors, setFormErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState('');
 
-  const handleAddBook = (e) => {
-    e.preventDefault();
-    if (!newTitle.trim() || !newAuthor.trim()) return;
+  // Controlled Input Change Handler
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
+    // Clear field-specific error as user types
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  // Exercise 4: Client-Side Form Validation Rules
+  const validateForm = () => {
+    const errors = {};
+
+    // 1. Title validation
+    if (!formData.title.trim()) {
+      errors.title = 'Book title is required.';
+    } else if (formData.title.trim().length < 3) {
+      errors.title = 'Title must be at least 3 characters long.';
+    }
+
+    // 2. Author validation
+    if (!formData.author.trim()) {
+      errors.author = 'Author name is required.';
+    } else if (formData.author.trim().length < 3) {
+      errors.author = 'Author name must be at least 3 characters long.';
+    }
+
+    // 3. ISBN validation (e.g. 978-0132350884 or 10-13 digits)
+    const isbnRegex = /^(?=(?:\D*\d){10}(?:(?:\D*\d){3})?$)[\d-]+$/;
+    if (!formData.isbn.trim()) {
+      errors.isbn = 'ISBN identifier is required.';
+    } else if (!isbnRegex.test(formData.isbn.trim())) {
+      errors.isbn = 'Please enter a valid 10 or 13-digit ISBN (e.g., 978-0132350884).';
+    }
+
+    // 4. Copies validation (positive integer)
+    const copiesNum = parseInt(formData.copies, 10);
+    if (!formData.copies) {
+      errors.copies = 'Number of copies is required.';
+    } else if (isNaN(copiesNum) || copiesNum < 1 || copiesNum > 100) {
+      errors.copies = 'Copies must be a positive number between 1 and 100.';
+    }
+
+    // 5. Published Year validation
+    const currentYear = new Date().getFullYear();
+    const yearNum = parseInt(formData.publishedYear, 10);
+    if (!formData.publishedYear) {
+      errors.publishedYear = 'Publication year is required.';
+    } else if (isNaN(yearNum) || yearNum < 1450 || yearNum > currentYear) {
+      errors.publishedYear = `Enter a valid year between 1450 and ${currentYear}.`;
+    }
+
+    return errors;
+  };
+
+  // Exercise 3: Form Submission Handler
+  const handleSubmit = (e) => {
+    e.preventDefault(); // Prevents default browser reload
+    const errors = validateForm();
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
+
+    // Create new book entry
     const newBook = {
       id: `BK-${100 + booksList.length + 1}`,
-      title: newTitle,
-      author: newAuthor,
-      category: newCategory,
-      isbn: `978-0${Math.floor(100000000 + Math.random() * 900000000)}`,
-      copies: Number(newCopies),
-      available: Number(newCopies),
+      title: formData.title.trim(),
+      author: formData.author.trim(),
+      category: formData.category,
+      isbn: formData.isbn.trim(),
+      copies: parseInt(formData.copies, 10),
+      available: parseInt(formData.copies, 10),
+      publishedYear: parseInt(formData.publishedYear, 10),
     };
 
+    console.log('Sprint 10 — New Book Registered (Controlled Component):', newBook);
+
+    // Update list state
     setBooksList([newBook, ...booksList]);
-    setNewTitle('');
-    setNewAuthor('');
+    setSuccessMessage(`"${newBook.title}" by ${newBook.author} was registered successfully!`);
+    handleReset(); // Exercise 6: Clear all fields after submission
     setShowAddForm(false);
-    setNotification(`Successfully added "${newBook.title}" to library catalog!`);
-    setTimeout(() => setNotification(''), 4000);
+    setTimeout(() => setSuccessMessage(''), 4500);
+  };
+
+  // Exercise 6: Reset Form Handler
+  const handleReset = () => {
+    setFormData(INITIAL_FORM_STATE);
+    setFormErrors({});
   };
 
   const filteredBooks = booksList.filter((book) => {
@@ -60,24 +153,26 @@ export default function Books() {
 
   return (
     <div>
-      {/* Exercise 2: PageTitle with Dynamic Props */}
       <PageTitle
         title="Book Inventory & Catalog"
-        subtitle={`Displaying ${filteredBooks.length} of ${booksList.length} total cataloged books in system`}
-        badge={`${filteredBooks.length} Titles Listed`}
+        subtitle={`Displaying ${filteredBooks.length} of ${booksList.length} cataloged titles • Sprint 10 Controlled Form System`}
+        badge={`${filteredBooks.length} Titles`}
         icon={BookOpen}
       >
         <Button
           icon={showAddForm ? X : Plus}
           variant={showAddForm ? 'secondary' : 'primary'}
-          onClick={() => setShowAddForm((prev) => !prev)}
+          onClick={() => {
+            setShowAddForm((prev) => !prev);
+            if (!showAddForm) handleReset();
+          }}
         >
-          {showAddForm ? 'Cancel' : 'Add New Book'}
+          {showAddForm ? 'Close Form' : 'Register New Book'}
         </Button>
       </PageTitle>
 
-      {/* Exercise 6: Conditional Notification Message */}
-      {notification && (
+      {/* Success Notification */}
+      {successMessage && (
         <div
           style={{
             backgroundColor: 'var(--success-light)',
@@ -93,56 +188,145 @@ export default function Books() {
           }}
         >
           <CheckCircle size={18} />
-          {notification}
+          {successMessage}
         </div>
       )}
 
-      {/* Exercise 6: Conditional Rendering - Add New Book Form Drawer */}
+      {/* Exercise 1 & 7: Project-Specific Book Registration Form */}
       {showAddForm && (
-        <Card title="Register New Book in Inventory" subtitle="Fill in details to catalog a new title" badge="Catalog Form">
-          <form onSubmit={handleAddBook}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        <Card
+          title="Register New Book in Catalog"
+          subtitle="All inputs are controlled components with real-time validation and error feedback."
+          badge="Sprint 10 Form"
+          headerIcon={BookMarked}
+        >
+          <form onSubmit={handleSubmit} noValidate>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: '16px',
+              }}
+            >
+              {/* Title Input */}
               <Input
+                id="book-title"
+                name="title"
                 label="Book Title"
-                placeholder="e.g. Clean Architecture"
-                value={newTitle}
-                onChange={(e) => setNewTitle(e.target.value)}
+                placeholder="e.g. Designing Data-Intensive Applications"
+                value={formData.title}
+                onChange={handleInputChange}
+                error={formErrors.title}
                 required
               />
+
+              {/* Author Input */}
               <Input
+                id="book-author"
+                name="author"
                 label="Author Name"
-                placeholder="e.g. Robert C. Martin"
-                value={newAuthor}
-                onChange={(e) => setNewAuthor(e.target.value)}
+                placeholder="e.g. Martin Kleppmann"
+                value={formData.author}
+                onChange={handleInputChange}
+                error={formErrors.author}
                 required
               />
+
+              {/* Category Select */}
               <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label">Category</label>
-                <select
-                  className="form-input"
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
+                <label
+                  htmlFor="book-category"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    marginBottom: '6px',
+                    color: 'var(--text-main)',
+                  }}
                 >
-                  {categories.filter((c) => c !== 'All').map((cat) => (
-                    <option key={cat} value={cat}>{cat}</option>
+                  Category <span style={{ color: 'var(--danger)' }}>*</span>
+                </label>
+                <select
+                  id="book-category"
+                  name="category"
+                  className="form-input"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid var(--border-color)',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  {CATEGORIES.filter((c) => c !== 'All').map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
                   ))}
                 </select>
               </div>
+
+              {/* ISBN Input */}
               <Input
-                label="Number of Copies"
+                id="book-isbn"
+                name="isbn"
+                label="ISBN Number"
+                placeholder="e.g. 978-1449373320"
+                value={formData.isbn}
+                onChange={handleInputChange}
+                error={formErrors.isbn}
+                required
+              />
+
+              {/* Number of Copies */}
+              <Input
+                id="book-copies"
+                name="copies"
                 type="number"
                 min="1"
-                max="50"
-                value={newCopies}
-                onChange={(e) => setNewCopies(e.target.value)}
+                max="100"
+                label="Inventory Copies"
+                placeholder="e.g. 5"
+                value={formData.copies}
+                onChange={handleInputChange}
+                error={formErrors.copies}
+                required
+              />
+
+              {/* Publication Year */}
+              <Input
+                id="book-year"
+                name="publishedYear"
+                type="number"
+                label="Publication Year"
+                placeholder="e.g. 2017"
+                value={formData.publishedYear}
+                onChange={handleInputChange}
+                error={formErrors.publishedYear}
                 required
               />
             </div>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+
+            {/* Exercise 6: Action Buttons with Submit and Reset */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '12px',
+                marginTop: '16px',
+                paddingTop: '16px',
+                borderTop: '1px solid var(--border-light)',
+                flexWrap: 'wrap',
+              }}
+            >
               <Button type="submit" variant="primary" icon={Plus}>
-                Save to Catalog
+                Register Book
               </Button>
-              <Button type="button" variant="secondary" onClick={() => setShowAddForm(false)}>
+              <Button type="button" variant="secondary" icon={RotateCcw} onClick={handleReset}>
+                Reset Form
+              </Button>
+              <Button type="button" variant="ghost" onClick={() => setShowAddForm(false)}>
                 Cancel
               </Button>
             </div>
@@ -150,7 +334,7 @@ export default function Books() {
         </Card>
       )}
 
-      {/* Filter and Search Bar (Exercise 5: Input event) */}
+      {/* Filter and Search Bar */}
       <Card>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ flex: 1, minWidth: '240px' }}>
@@ -163,10 +347,18 @@ export default function Books() {
             />
           </div>
           <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span
+              style={{
+                fontSize: '0.85rem',
+                color: 'var(--text-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
               <Filter size={15} /> Category:
             </span>
-            {categories.map((cat) => (
+            {CATEGORIES.map((cat) => (
               <Button
                 key={cat}
                 size="sm"
@@ -181,10 +373,14 @@ export default function Books() {
         </div>
       </Card>
 
-      {/* Books Table (Exercise 6: Conditional Rendering - Data Available vs Empty State) */}
+      {/* Books Table */}
       <Card
-        title={`Books List (${filteredBooks.length} titles)`}
-        subtitle={selectedCategory !== 'All' ? `Filtered by category: ${selectedCategory}` : 'Showing all catalog items'}
+        title={`Registered Books Catalog (${filteredBooks.length} titles)`}
+        subtitle={
+          selectedCategory !== 'All'
+            ? `Filtered by category: ${selectedCategory}`
+            : 'Showing all active catalog holdings'
+        }
         badge={filteredBooks.length > 0 ? 'Data Available' : 'No Data'}
       >
         {filteredBooks.length > 0 ? (
@@ -243,7 +439,7 @@ export default function Books() {
             <AlertTriangle size={36} style={{ color: 'var(--text-muted)', marginBottom: '8px' }} />
             <h4 style={{ fontWeight: 600, marginBottom: '4px' }}>No Matching Books Found</h4>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '16px' }}>
-              We couldn't find any books matching "{searchTerm}" in the {selectedCategory} category.
+              We couldn't find any books matching "{searchTerm}" in category "{selectedCategory}".
             </p>
             <Button
               size="sm"

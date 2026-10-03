@@ -3,48 +3,111 @@ import PageTitle from '../../components/ui/PageTitle';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import { UserPlus, Search, Users, AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { initialMembers as defaultMembers } from '../../data/mockData';
+import {
+  UserPlus,
+  Search,
+  Users,
+  AlertTriangle,
+  CheckCircle,
+  X,
+  RotateCcw,
+  UserCheck,
+} from 'lucide-react';
 
-const initialMembers = [
-  { id: 'MEM-001', name: 'Rahul Sharma', email: 'rahul.s@univ.edu', department: 'Computer Science', role: 'Student', borrowedCount: 2, status: 'Active' },
-  { id: 'MEM-002', name: 'Dr. Priya Desai', email: 'priya.d@univ.edu', department: 'Information Technology', role: 'Faculty', borrowedCount: 4, status: 'Active' },
-  { id: 'MEM-003', name: 'Ananya Verma', email: 'ananya.v@univ.edu', department: 'Computer Science', role: 'Student', borrowedCount: 1, status: 'Active' },
-  { id: 'MEM-004', name: 'Vikram Patel', email: 'vikram.p@univ.edu', department: 'Electrical Engineering', role: 'Student', borrowedCount: 3, status: 'Suspended' },
-  { id: 'MEM-005', name: 'Sneha Roy', email: 'sneha.r@univ.edu', department: 'Mechanical Engineering', role: 'Student', borrowedCount: 0, status: 'Active' },
-];
+const INITIAL_MEMBER_FORM = {
+  name: '',
+  email: '',
+  department: '',
+  role: 'Student',
+  phone: '',
+};
 
 export default function Members() {
-  const [membersList, setMembersList] = useState(initialMembers);
+  const [membersList, setMembersList] = useState(defaultMembers);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('All');
   const [showAddForm, setShowAddForm] = useState(false);
-  const [newName, setNewName] = useState('');
-  const [newEmail, setNewEmail] = useState('');
-  const [newDept, setNewDept] = useState('');
-  const [newRole, setNewRole] = useState('Student');
+
+  // Controlled Form State & Validation
+  const [formData, setFormData] = useState(INITIAL_MEMBER_FORM);
+  const [formErrors, setFormErrors] = useState({});
   const [notification, setNotification] = useState('');
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    if (formErrors[name]) {
+      setFormErrors((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validateMemberForm = () => {
+    const errors = {};
+
+    // Name validation
+    if (!formData.name.trim()) {
+      errors.name = 'Full member name is required.';
+    } else if (formData.name.trim().length < 3) {
+      errors.name = 'Name must be at least 3 characters long.';
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      errors.email = 'University email address is required.';
+    } else if (!emailRegex.test(formData.email.trim())) {
+      errors.email = 'Please enter a valid email address (e.g., student@univ.edu).';
+    }
+
+    // Department validation
+    if (!formData.department.trim()) {
+      errors.department = 'Academic department is required.';
+    }
+
+    // Phone validation (optional or 10 digits)
+    if (formData.phone.trim()) {
+      const phoneDigits = formData.phone.replace(/\D/g, '');
+      if (phoneDigits.length < 10) {
+        errors.phone = 'Phone number must contain at least 10 digits.';
+      }
+    }
+
+    return errors;
+  };
 
   const handleRegisterMember = (e) => {
     e.preventDefault();
-    if (!newName.trim() || !newEmail.trim()) return;
+    const errors = validateMemberForm();
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      return;
+    }
 
     const newMember = {
       id: `MEM-00${membersList.length + 1}`,
-      name: newName,
-      email: newEmail,
-      department: newDept || 'General Studies',
-      role: newRole,
+      name: formData.name.trim(),
+      email: formData.email.trim(),
+      department: formData.department.trim(),
+      role: formData.role,
       borrowedCount: 0,
       status: 'Active',
     };
 
+    console.log('Sprint 10 — New Member Registered (Controlled Component):', newMember);
+
     setMembersList([newMember, ...membersList]);
-    setNewName('');
-    setNewEmail('');
-    setNewDept('');
+    handleReset();
     setShowAddForm(false);
     setNotification(`Successfully registered member "${newMember.name}"!`);
-    setTimeout(() => setNotification(''), 4000);
+    setTimeout(() => setNotification(''), 4500);
+  };
+
+  const handleReset = () => {
+    setFormData(INITIAL_MEMBER_FORM);
+    setFormErrors({});
   };
 
   const filteredMembers = membersList.filter((m) => {
@@ -59,23 +122,25 @@ export default function Members() {
 
   return (
     <div>
-      {/* Exercise 2: PageTitle with Dynamic Props */}
       <PageTitle
         title="Member Management"
-        subtitle={`Total registered members: ${membersList.length} • Active in directory: ${filteredMembers.length}`}
-        badge={`${filteredMembers.length} Members Displayed`}
+        subtitle={`Total registered members: ${membersList.length} • Directory listings: ${filteredMembers.length} • Sprint 10 Controlled Forms`}
+        badge={`${filteredMembers.length} Members`}
         icon={Users}
       >
         <Button
           icon={showAddForm ? X : UserPlus}
           variant={showAddForm ? 'secondary' : 'primary'}
-          onClick={() => setShowAddForm((prev) => !prev)}
+          onClick={() => {
+            setShowAddForm((prev) => !prev);
+            if (!showAddForm) handleReset();
+          }}
         >
-          {showAddForm ? 'Cancel' : 'Register Member'}
+          {showAddForm ? 'Close Form' : 'Register Member'}
         </Button>
       </PageTitle>
 
-      {/* Exercise 6: Conditional Notification */}
+      {/* Conditional Success Alert */}
       {notification && (
         <div
           style={{
@@ -96,39 +161,92 @@ export default function Members() {
         </div>
       )}
 
-      {/* Conditional Rendering: Register Member Drawer */}
+      {/* Controlled Member Registration Form */}
       {showAddForm && (
-        <Card title="Register New Library Member" subtitle="Input student or faculty registration credentials" badge="Registration">
-          <form onSubmit={handleRegisterMember}>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px' }}>
+        <Card
+          title="Register New Library Member"
+          subtitle="All inputs are controlled components with real-time validation and error feedback."
+          badge="Registration Form"
+          headerIcon={UserCheck}
+        >
+          <form onSubmit={handleRegisterMember} noValidate>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '16px',
+              }}
+            >
               <Input
+                id="member-name"
+                name="name"
                 label="Full Name"
                 placeholder="e.g. Aditi Sen"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
+                value={formData.name}
+                onChange={handleInputChange}
+                error={formErrors.name}
                 required
               />
+
               <Input
-                label="Email Address"
+                id="member-email"
+                name="email"
                 type="email"
+                label="University Email"
                 placeholder="e.g. aditi.s@univ.edu"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
+                value={formData.email}
+                onChange={handleInputChange}
+                error={formErrors.email}
                 required
               />
+
               <Input
+                id="member-dept"
+                name="department"
                 label="Academic Department"
-                placeholder="e.g. Data Science"
-                value={newDept}
-                onChange={(e) => setNewDept(e.target.value)}
+                placeholder="e.g. Data Science & AI"
+                value={formData.department}
+                onChange={handleInputChange}
+                error={formErrors.department}
                 required
               />
+
+              <Input
+                id="member-phone"
+                name="phone"
+                label="Contact Phone"
+                placeholder="e.g. 9876543210"
+                value={formData.phone}
+                onChange={handleInputChange}
+                error={formErrors.phone}
+              />
+
               <div className="form-group" style={{ marginBottom: '16px' }}>
-                <label className="form-label">Membership Role</label>
+                <label
+                  htmlFor="member-role"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    marginBottom: '6px',
+                    color: 'var(--text-main)',
+                  }}
+                >
+                  Membership Role <span style={{ color: 'var(--danger)' }}>*</span>
+                </label>
                 <select
+                  id="member-role"
+                  name="role"
                   className="form-input"
-                  value={newRole}
-                  onChange={(e) => setNewRole(e.target.value)}
+                  value={formData.role}
+                  onChange={handleInputChange}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid var(--border-color)',
+                    fontSize: '0.875rem',
+                  }}
                 >
                   <option value="Student">Student (Limit: 5 books)</option>
                   <option value="Faculty">Faculty (Limit: 10 books)</option>
@@ -136,11 +254,24 @@ export default function Members() {
                 </select>
               </div>
             </div>
-            <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: '12px',
+                marginTop: '16px',
+                paddingTop: '16px',
+                borderTop: '1px solid var(--border-light)',
+                flexWrap: 'wrap',
+              }}
+            >
               <Button type="submit" variant="primary" icon={UserPlus}>
-                Confirm Registration
+                Register Member
               </Button>
-              <Button type="button" variant="secondary" onClick={() => setShowAddForm(false)}>
+              <Button type="button" variant="secondary" icon={RotateCcw} onClick={handleReset}>
+                Reset Form
+              </Button>
+              <Button type="button" variant="ghost" onClick={() => setShowAddForm(false)}>
                 Cancel
               </Button>
             </div>
@@ -148,7 +279,7 @@ export default function Members() {
         </Card>
       )}
 
-      {/* Filter and Search Bar (Exercise 5: Input event) */}
+      {/* Filter and Search Bar */}
       <Card>
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ flex: 1, minWidth: '240px' }}>
@@ -177,7 +308,7 @@ export default function Members() {
         </div>
       </Card>
 
-      {/* Members Table with Conditional Rendering */}
+      {/* Members Table */}
       <Card
         title={`Registered Members (${filteredMembers.length})`}
         subtitle="Active borrowing rights and university identification"
