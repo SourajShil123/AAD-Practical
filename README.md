@@ -17,6 +17,7 @@ The Library Management System is a full-stack MERN web application designed to m
 - **Sprint 5 — Frontend Foundation with React:** Component setup, base styling with modern CSS variables.
 - **Sprint 6 — React Router Navigation:** Multi-page client-side routing, protected and public layouts.
 - **Sprint 7 — Reusable Components and Application Layout:** Core UI components (`Button`, `Card`, `PageTitle`), Main & Auth layouts.
+- **Sprint 8 — Working with React Props and Component Communication:** Dynamic data passing using Props, component parameterization, and parent-to-child communication.
 - **Sprint 9 — Working with React State, Props, and Event Handling:** Dynamic data flow via Props, component state with `useState`, user event handling (`onClick`, `onChange`), dynamic rendering, and conditional UI branches.
 
 ---
