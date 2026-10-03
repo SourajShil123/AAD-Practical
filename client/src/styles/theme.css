@@ -1,0 +1,15 @@
+@import '../assets/styles/variables.css';
+@import '../assets/styles/global.css';
+
+/* Extended Theme Tokens and System Styles */
+.resource-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  font-size: 0.75rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+}
