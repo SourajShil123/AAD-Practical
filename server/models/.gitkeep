@@ -1,0 +1,2 @@
+# Models directory
+This directory will contain Mongoose data models and schemas (e.g., Book.js, Member.js, User.js) in upcoming sprints.
