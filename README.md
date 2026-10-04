@@ -21,6 +21,7 @@ The Library Management System is a full-stack MERN web application designed to m
 - **Sprint 9 — Working with React State, Props, and Event Handling:** Dynamic data flow via Props, component state with `useState`, user event handling (`onClick`, `onChange`), dynamic rendering, and conditional UI branches.
 - **Sprint 10 — Building Forms, Controlled Components, and Client-Side Validation:** Controlled form components, form state synchronization, client-side validation rules, user feedback, and form resetting.
 - **Sprint 11 — Setting Up the Backend with Node.js and Express.js:** Express server initialization, layered modular architecture (`config`, `controllers`, `middleware`, `models`, `routes`, `services`, `utils`, `uploads`, `public`), decoupling `app.js` and `server.js`, and test API endpoints.
+- **Sprint 12 — Express Routing and Middleware:** RESTful routing for the Books module (`GET`, `POST`, `PUT`, `DELETE`), route parameters (`:id`), controller separation, custom request logger middleware, and `next()` pipeline control.
 
 ---
 
@@ -37,6 +38,7 @@ Detailed documentation files for all sprints are available in:
 - [`docs/SPRINT-9.md`](./docs/SPRINT-9.md), [`docs/state-management.md`](./docs/state-management.md), [`docs/event-handling.md`](./docs/event-handling.md)
 - [`docs/SPRINT-10.md`](./docs/SPRINT-10.md) & [`docs/forms-and-validation.md`](./docs/forms-and-validation.md)
 - [`docs/SPRINT-11.md`](./docs/SPRINT-11.md) & [`docs/backend-architecture.md`](./docs/backend-architecture.md)
+- [`docs/SPRINT-12.md`](./docs/SPRINT-12.md) & [`docs/routing-and-middleware.md`](./docs/routing-and-middleware.md)
 
 ---
 
