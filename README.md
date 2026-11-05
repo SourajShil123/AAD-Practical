@@ -9,7 +9,7 @@ The Library Management System is a full-stack MERN web application designed to m
 
 ---
 
-## Sprints Summary (Sprint 1 to 15)
+## Sprints Summary (Sprint 1 to 16)
 
 - **Sprint 1 — Project Foundation & Development Environment:** Workspace initialization, Git version control, software setup.
 - **Sprint 2 — Requirements Analysis:** User roles, functional & non-functional requirements.
@@ -26,6 +26,7 @@ The Library Management System is a full-stack MERN web application designed to m
 - **Sprint 13 — MongoDB Setup and Backend Database Connection:** Cloud MongoDB Atlas provision (`LibraryManagementDB`), `books` collection, Mongoose ODM installation, `.env` configuration, database connection module (`server/config/database.js`), and REST API verification.
 - **Sprint 14 — Mongoose Schemas and Models:** Mongoose Schema and Model creation for the Book entity (`server/models/Book.js`), field validation rules, unique ISBN indexing, controller integration, and live database persistence.
 - **Sprint 15 — Implementing CRUD REST APIs with MongoDB:** Full database-driven CRUD operations for books (`POST`, `GET`, `GET /:id`, `PUT /:id`, `DELETE /:id`) connected to MongoDB Atlas with Mongoose methods, semantic HTTP status codes (`200`, `201`, `400`, `404`, `500`), and defensive error handling.
+- **Sprint 16 — Connecting React Frontend with REST APIs:** End-to-end integration connecting the React client to Express REST APIs via `bookService.js`, enabling real-time database querying, book registration (`POST`), document modification (`PUT`), and confirmed deletion (`DELETE`) with dynamic loading and error states.
 
 ---
 
@@ -48,6 +49,7 @@ Complete documentation, guides, and practical specifications for all sprints are
 - [Sprint 13: MongoDB Setup & Database Connection](./docs/SPRINT-13.md)
 - [Sprint 14: Mongoose Schemas & Models](./docs/SPRINT-14.md) & [Book Schema Design](./docs/book-schema-design.md)
 - [Sprint 15: Implementing CRUD REST APIs with MongoDB](./docs/SPRINT-15.md)
+- [Sprint 16: Connecting React Frontend with REST APIs](./docs/SPRINT-16.md)
 
 ---
 
