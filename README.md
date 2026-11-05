@@ -22,6 +22,25 @@ The Library Management System is a full-stack MERN web application designed to m
 - **Sprint 10 — Building Forms, Controlled Components, and Client-Side Validation:** Controlled form components, form state synchronization, client-side validation rules, user feedback, and form resetting.
 - **Sprint 11 — Setting Up the Backend with Node.js and Express.js:** Express server initialization, layered modular architecture (`config`, `controllers`, `middleware`, `models`, `routes`, `services`, `utils`, `uploads`, `public`), decoupling `app.js` and `server.js`, and test API endpoints.
 - **Sprint 12 — Express Routing and Middleware:** RESTful routing for the Books module (`GET`, `POST`, `PUT`, `DELETE`), route parameters (`:id`), controller separation, custom request logger middleware, and `next()` pipeline control.
+- **Sprint 13 — MongoDB Setup and Backend Database Connection:** Cloud MongoDB Atlas provision (`LibraryManagementDB`), `books` collection, Mongoose ODM installation, `.env` configuration, database connection module (`server/config/database.js`), and REST API verification.
+
+---
+
+## Sprint 13 Highlights & Output Screenshots
+
+- **Database & Collection:** MongoDB Atlas `Cluster0` &rarr; `LibraryManagementDB` &rarr; `books` collection with 3 document records.
+- **Mongoose Connection:** Modular connection handler implemented in [`server/config/database.js`](./server/config/database.js).
+- **Console Log Output:** Server logs `Server running on port 5000` & `MongoDB connected successfully`.
+- **API Endpoint:** `GET /api/books` returning `200 OK` status and book list.
+- **Detailed Documentation:** [`docs/SPRINT-13.md`](./docs/SPRINT-13.md)
+
+### Verification Outputs:
+| IMG 1: MongoDB Compass | IMG 2: VS Code & Terminal | IMG 3: Postman API |
+|:---:|:---:|:---:|
+| ![Compass](./docs/images/sprint-13-img1-mongodb-compass.jpg) | ![VS Code](./docs/images/sprint-13-img2-vscode-terminal.jpg) | ![Postman](./docs/images/sprint-13-img3-postman.jpg) |
+
+### Practical Report Sheet:
+![Sprint 13 Output](./docs/images/sprint-13-output.jpg)
 
 ---
 
@@ -39,6 +58,7 @@ Detailed documentation files for all sprints are available in:
 - [`docs/SPRINT-10.md`](./docs/SPRINT-10.md) & [`docs/forms-and-validation.md`](./docs/forms-and-validation.md)
 - [`docs/SPRINT-11.md`](./docs/SPRINT-11.md) & [`docs/backend-architecture.md`](./docs/backend-architecture.md)
 - [`docs/SPRINT-12.md`](./docs/SPRINT-12.md) & [`docs/routing-and-middleware.md`](./docs/routing-and-middleware.md)
+- [`docs/SPRINT-13.md`](./docs/SPRINT-13.md) & [`docs/database-design.md`](./docs/database-design.md)
 
 ---
 
