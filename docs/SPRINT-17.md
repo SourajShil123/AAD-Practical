@@ -142,3 +142,4 @@ In `client/src/pages/Members/Members.jsx`:
 ## 9. Conclusion
 
 In Sprint 17, the Library Management System successfully expanded into a full multi-module architecture by implementing the Member Management module. Reusing the battle-tested MERN patterns established in earlier sprints, the new module provides an independent database collection (`members`), robust Mongoose validations, full CRUD REST API endpoints, a clean Axios service layer, and a rich interactive React interface. Both Books and Members operate harmoniously within the same application, proving that LibMaster has achieved a clean, maintainable, and enterprise-grade software architecture.
+

@@ -87,3 +87,4 @@ memberSchema.virtual('id').get(function () {
 const Member = mongoose.model('Member', memberSchema);
 
 module.exports = Member;
+
