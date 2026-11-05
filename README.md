@@ -23,6 +23,21 @@ The Library Management System is a full-stack MERN web application designed to m
 - **Sprint 11 — Setting Up the Backend with Node.js and Express.js:** Express server initialization, layered modular architecture (`config`, `controllers`, `middleware`, `models`, `routes`, `services`, `utils`, `uploads`, `public`), decoupling `app.js` and `server.js`, and test API endpoints.
 - **Sprint 12 — Express Routing and Middleware:** RESTful routing for the Books module (`GET`, `POST`, `PUT`, `DELETE`), route parameters (`:id`), controller separation, custom request logger middleware, and `next()` pipeline control.
 - **Sprint 13 — MongoDB Setup and Backend Database Connection:** Cloud MongoDB Atlas provision (`LibraryManagementDB`), `books` collection, Mongoose ODM installation, `.env` configuration, database connection module (`server/config/database.js`), and REST API verification.
+- **Sprint 14 — Mongoose Schemas and Models:** Mongoose Schema and Model creation for the Book entity (`server/models/Book.js`), field validation rules, unique ISBN indexing, controller integration, and live database persistence.
+
+---
+
+## Sprint 14 Highlights & Output Screenshots
+
+- **Mongoose Schema & Model:** Implemented in [`server/models/Book.js`](./server/models/Book.js) with required fields, string trimming, unique ISBN validator, status enum, copies min constraint, and virtual `id`.
+- **Database Integration:** Express controller [`server/controllers/bookController.js`](./server/controllers/bookController.js) connected to MongoDB via Mongoose Model queries (`find`, `findById`, `create`, `findByIdAndUpdate`, `findByIdAndDelete`).
+- **Data Integrity:** Tested live on MongoDB Atlas with duplicate key rejection (HTTP 400) and schema validation enforcement.
+- **Detailed Documentation:** [`docs/SPRINT-14.md`](./docs/SPRINT-14.md) & [`docs/book-schema-design.md`](./docs/book-schema-design.md)
+
+### Verification Outputs:
+| Screenshot 1: Book Schema & Model | Screenshot 2: MongoDB Database | Screenshot 3: Database Connection |
+|:---:|:---:|:---:|
+| ![Book Schema](./docs/images/sprint-14-img1-book-schema-model-light.jpg) | ![MongoDB Database](./docs/images/sprint-14-img2-mongodb-database-light.jpg) | ![Database Connection](./docs/images/sprint-14-img3-database-connection-light.jpg) |
 
 ---
 
@@ -59,6 +74,7 @@ Detailed documentation files for all sprints are available in:
 - [`docs/SPRINT-11.md`](./docs/SPRINT-11.md) & [`docs/backend-architecture.md`](./docs/backend-architecture.md)
 - [`docs/SPRINT-12.md`](./docs/SPRINT-12.md) & [`docs/routing-and-middleware.md`](./docs/routing-and-middleware.md)
 - [`docs/SPRINT-13.md`](./docs/SPRINT-13.md) & [`docs/database-design.md`](./docs/database-design.md)
+- [`docs/SPRINT-14.md`](./docs/SPRINT-14.md) & [`docs/book-schema-design.md`](./docs/book-schema-design.md)
 
 ---
 
