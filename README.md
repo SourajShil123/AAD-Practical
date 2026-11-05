@@ -1,14 +1,15 @@
-# Library Management System
+# Library Management System (LibMaster)
 
 The Library Management System is a full-stack MERN web application designed to manage books, members, borrowing, returns, and fines through a centralized, reactive platform.
 
 ## Project Information
+- **Project:** LibMaster — Library Management System
 - **Domain:** Education
 - **Technology Stack:** MongoDB, Express.js, React.js 19, Node.js (Vite frontend)
 
 ---
 
-## Sprints Summary
+## Sprints Summary (Sprint 1 to 14)
 
 - **Sprint 1 — Project Foundation & Development Environment:** Workspace initialization, Git version control, software setup.
 - **Sprint 2 — Requirements Analysis:** User roles, functional & non-functional requirements.
@@ -27,54 +28,24 @@ The Library Management System is a full-stack MERN web application designed to m
 
 ---
 
-## Sprint 14 Highlights & Output Screenshots
+## Detailed Sprint Documentation
 
-- **Mongoose Schema & Model:** Implemented in [`server/models/Book.js`](./server/models/Book.js) with required fields, string trimming, unique ISBN validator, status enum, copies min constraint, and virtual `id`.
-- **Database Integration:** Express controller [`server/controllers/bookController.js`](./server/controllers/bookController.js) connected to MongoDB via Mongoose Model queries (`find`, `findById`, `create`, `findByIdAndUpdate`, `findByIdAndDelete`).
-- **Data Integrity:** Tested live on MongoDB Atlas with duplicate key rejection (HTTP 400) and schema validation enforcement.
-- **Detailed Documentation:** [`docs/SPRINT-14.md`](./docs/SPRINT-14.md) & [`docs/book-schema-design.md`](./docs/book-schema-design.md)
+Complete documentation, guides, and practical specifications for all sprints are available in the `docs/` directory:
 
-### Verification Outputs:
-| Screenshot 1: Book Schema & Model | Screenshot 2: MongoDB Database | Screenshot 3: Database Connection |
-|:---:|:---:|:---:|
-| ![Book Schema](./docs/images/sprint-14-img1-book-schema-model-light.jpg) | ![MongoDB Database](./docs/images/sprint-14-img2-mongodb-database-light.jpg) | ![Database Connection](./docs/images/sprint-14-img3-database-connection-light.jpg) |
-
----
-
-## Sprint 13 Highlights & Output Screenshots
-
-- **Database & Collection:** MongoDB Atlas `Cluster0` &rarr; `LibraryManagementDB` &rarr; `books` collection with 3 document records.
-- **Mongoose Connection:** Modular connection handler implemented in [`server/config/database.js`](./server/config/database.js).
-- **Console Log Output:** Server logs `Server running on port 5000` & `MongoDB connected successfully`.
-- **API Endpoint:** `GET /api/books` returning `200 OK` status and book list.
-- **Detailed Documentation:** [`docs/SPRINT-13.md`](./docs/SPRINT-13.md)
-
-### Verification Outputs:
-| IMG 1: MongoDB Compass | IMG 2: VS Code & Terminal | IMG 3: Postman API |
-|:---:|:---:|:---:|
-| ![Compass](./docs/images/sprint-13-img1-mongodb-compass.jpg) | ![VS Code](./docs/images/sprint-13-img2-vscode-terminal.jpg) | ![Postman](./docs/images/sprint-13-img3-postman.jpg) |
-
-### Practical Report Sheet:
-![Sprint 13 Output](./docs/images/sprint-13-output.jpg)
-
----
-
-## Sprint 9 Overview & Highlights
-
-- **Dynamic Welcome Component (`Welcome.jsx`):** Reusable banner accepting configurable props (`userName`, `role`, `organizationName`, `projectName`, `isLoggedIn`, etc.) with zero hardcoded strings.
-- **State Management (`useState`):** Live walk-in circulation counter, dynamic metric timeframe filter ('today', 'week', 'month', 'all'), active notification badges, and live operator name binding.
-- **Event Handling:** Button click handlers (`onClick`) for counter manipulation, timeframe filters, notification dismissal, and fine settlements; real-time input event listeners (`onChange`) for live text updates and table searching.
-- **Conditional Rendering:** Authenticated administrator mode vs. guest view banners, alert drawer toggling, and contextual empty-state messages for zero-result table queries.
-- **Component Enhancements:** Extended `Button.jsx`, `Card.jsx`, and `PageTitle.jsx` with active states, collapsibility, badges, and responsive layouts.
-
-Detailed documentation files for all sprints are available in:
-- [`docs/SPRINT-8.md`](./docs/SPRINT-8.md) & [`docs/responsive-design.md`](./docs/responsive-design.md)
-- [`docs/SPRINT-9.md`](./docs/SPRINT-9.md), [`docs/state-management.md`](./docs/state-management.md), [`docs/event-handling.md`](./docs/event-handling.md)
-- [`docs/SPRINT-10.md`](./docs/SPRINT-10.md) & [`docs/forms-and-validation.md`](./docs/forms-and-validation.md)
-- [`docs/SPRINT-11.md`](./docs/SPRINT-11.md) & [`docs/backend-architecture.md`](./docs/backend-architecture.md)
-- [`docs/SPRINT-12.md`](./docs/SPRINT-12.md) & [`docs/routing-and-middleware.md`](./docs/routing-and-middleware.md)
-- [`docs/SPRINT-13.md`](./docs/SPRINT-13.md) & [`docs/database-design.md`](./docs/database-design.md)
-- [`docs/SPRINT-14.md`](./docs/SPRINT-14.md) & [`docs/book-schema-design.md`](./docs/book-schema-design.md)
+- [Sprint 1: Project Foundation](./docs/SPRINT-1.md)
+- [Sprint 2: Requirements Analysis](./docs/SPRINT-2.md) & [Requirements Specification](./docs/requirements.md)
+- [Sprint 3: Database & System Design](./docs/SPRINT-3.md), [Database Design](./docs/database-design.md) & [System Design](./docs/system-design.md)
+- [Sprint 4: Development Environment & Scaffolding](./docs/SPRINT-4.md) & [Dev Environment](./docs/development-environment.md)
+- [Sprint 5: Frontend Foundation with React](./docs/SPRINT-5.md) & [Frontend Structure](./docs/frontend-folder-structure.md)
+- [Sprint 6: React Router Navigation](./docs/SPRINT-6.md), [Routing Structure](./docs/routing-structure.md) & [Routing Design](./docs/routing-design.md)
+- [Sprint 7: Reusable Components & Layout](./docs/SPRINT-7.md), [Application Layout](./docs/application-layout.md) & [Reusable Components](./docs/reusable-components.md)
+- [Sprint 8: Responsive Design](./docs/SPRINT-8.md) & [Responsive Design Guide](./docs/responsive-design.md)
+- [Sprint 9: React State, Props & Event Handling](./docs/SPRINT-9.md), [State Management](./docs/state-management.md) & [Event Handling](./docs/event-handling.md)
+- [Sprint 10: Forms & Validation](./docs/SPRINT-10.md) & [Forms and Validation](./docs/forms-and-validation.md)
+- [Sprint 11: Backend Architecture & Express Setup](./docs/SPRINT-11.md) & [Backend Architecture](./docs/backend-architecture.md)
+- [Sprint 12: Express Routing & Middleware](./docs/SPRINT-12.md) & [Routing and Middleware](./docs/routing-and-middleware.md)
+- [Sprint 13: MongoDB Setup & Database Connection](./docs/SPRINT-13.md)
+- [Sprint 14: Mongoose Schemas & Models](./docs/SPRINT-14.md) & [Book Schema Design](./docs/book-schema-design.md)
 
 ---
 
@@ -117,6 +88,6 @@ npm run dev
 # Build the client bundle
 npm run build --prefix client
 
-# Run high-speed static analysis / linter
+# Run static analysis / linter
 npm run lint --prefix client
 ```
