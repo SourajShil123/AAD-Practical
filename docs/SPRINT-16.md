@@ -148,3 +148,4 @@ This enables all standard verbs (`GET`, `POST`, `PUT`, `DELETE`, `OPTIONS`) and 
 ## 8. Conclusion
 
 In Sprint 16, the Library Management System achieved full frontend-backend integration. The React application now completely consumes the Express and MongoDB REST API via a clean, reusable service architecture (`bookService.js`). All four CRUD actions—reading catalog holdings, registering new titles, modifying existing entries, and deleting retired records—are operational directly from the browser with proper loading states, confirmation dialogs, and error recovery. This marks a critical milestone: LibMaster is now a fully functional, end-to-end MERN application.
+
