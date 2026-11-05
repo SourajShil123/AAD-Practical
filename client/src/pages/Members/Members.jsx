@@ -1,38 +1,112 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PageTitle from '../../components/ui/PageTitle';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
-import { initialMembers as defaultMembers } from '../../data/mockData';
+import { memberService } from '../../services/memberService';
 import {
+  Users,
   UserPlus,
   Search,
-  Users,
+  Filter,
   AlertTriangle,
   CheckCircle,
   X,
   RotateCcw,
   UserCheck,
+  Pencil,
+  Trash2,
+  RefreshCw,
+  Loader2,
+  Check,
 } from 'lucide-react';
 
+const ROLES = ['All', 'Student', 'Faculty', 'Staff', 'Researcher'];
+const STATUSES = ['Active', 'Suspended', 'Expired'];
+
 const INITIAL_MEMBER_FORM = {
+  membershipId: '',
   name: '',
   email: '',
   department: '',
   role: 'Student',
   phone: '',
+  status: 'Active',
 };
 
 export default function Members() {
-  const [membersList, setMembersList] = useState(defaultMembers);
+  const [membersList, setMembersList] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('All');
-  const [showAddForm, setShowAddForm] = useState(false);
 
-  // Controlled Form State & Validation
+  // Form states (Sprint 17: Second CRUD Module)
+  const [showForm, setShowForm] = useState(false);
+  const [editingMember, setEditingMember] = useState(null); // null = Create, object = Edit
   const [formData, setFormData] = useState(INITIAL_MEMBER_FORM);
   const [formErrors, setFormErrors] = useState({});
+  const [formSubmitting, setFormSubmitting] = useState(false);
   const [notification, setNotification] = useState('');
+  const [formApiError, setFormApiError] = useState('');
+
+  // Fetch members from MongoDB through Express REST API
+  const loadMembers = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const response = await memberService.getAllMembers();
+      if (response && response.data) {
+        setMembersList(response.data);
+      } else if (Array.isArray(response)) {
+        setMembersList(response);
+      } else {
+        setMembersList([]);
+      }
+    } catch (err) {
+      console.error('Error fetching members from backend:', err);
+      const msg =
+        err.response?.data?.message ||
+        'Unable to load members from backend server (http://localhost:5000/api/members). Please ensure Express server is running and MongoDB is connected.';
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchInitial = async () => {
+      try {
+        const response = await memberService.getAllMembers();
+        if (isMounted) {
+          if (response && response.data) {
+            setMembersList(response.data);
+          } else if (Array.isArray(response)) {
+            setMembersList(response);
+          } else {
+            setMembersList([]);
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError(
+            err.response?.data?.message ||
+            'Unable to load members from backend server. Please verify database connection.'
+          );
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchInitial();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -41,19 +115,20 @@ export default function Members() {
     if (formErrors[name]) {
       setFormErrors((prev) => ({ ...prev, [name]: '' }));
     }
+    if (formApiError) {
+      setFormApiError('');
+    }
   };
 
   const validateMemberForm = () => {
     const errors = {};
 
-    // Name validation
     if (!formData.name.trim()) {
       errors.name = 'Full member name is required.';
-    } else if (formData.name.trim().length < 3) {
-      errors.name = 'Name must be at least 3 characters long.';
+    } else if (formData.name.trim().length < 2) {
+      errors.name = 'Name must be at least 2 characters long.';
     }
 
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
       errors.email = 'University email address is required.';
@@ -61,13 +136,11 @@ export default function Members() {
       errors.email = 'Please enter a valid email address (e.g., student@univ.edu).';
     }
 
-    // Department validation
     if (!formData.department.trim()) {
       errors.department = 'Academic department is required.';
     }
 
-    // Phone validation (optional or 10 digits)
-    if (formData.phone.trim()) {
+    if (formData.phone && formData.phone.trim()) {
       const phoneDigits = formData.phone.replace(/\D/g, '');
       if (phoneDigits.length < 10) {
         errors.phone = 'Phone number must contain at least 10 digits.';
@@ -77,7 +150,8 @@ export default function Members() {
     return errors;
   };
 
-  const handleRegisterMember = (e) => {
+  // Create (POST) or Update (PUT)
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const errors = validateMemberForm();
 
@@ -86,36 +160,125 @@ export default function Members() {
       return;
     }
 
-    const newMember = {
-      id: `MEM-00${membersList.length + 1}`,
+    setFormSubmitting(true);
+    setFormApiError('');
+
+    const payload = {
+      membershipId: formData.membershipId.trim() || undefined,
       name: formData.name.trim(),
-      email: formData.email.trim(),
+      email: formData.email.trim().toLowerCase(),
       department: formData.department.trim(),
       role: formData.role,
-      borrowedCount: 0,
-      status: 'Active',
+      phone: formData.phone.trim(),
+      status: formData.status,
     };
 
-    console.log('Sprint 10 — New Member Registered (Controlled Component):', newMember);
+    try {
+      if (editingMember) {
+        const memberId = editingMember._id || editingMember.id;
+        await memberService.updateMember(memberId, payload);
+        setNotification(`Member "${payload.name}" updated successfully in database!`);
+      } else {
+        await memberService.createMember(payload);
+        setNotification(`Member "${payload.name}" registered successfully in MongoDB!`);
+      }
 
-    setMembersList([newMember, ...membersList]);
-    handleReset();
-    setShowAddForm(false);
-    setNotification(`Successfully registered member "${newMember.name}"!`);
-    setTimeout(() => setNotification(''), 4500);
+      handleCloseForm();
+      await loadMembers();
+      setTimeout(() => setNotification(''), 5000);
+    } catch (err) {
+      console.error('Failed to submit member:', err);
+      const apiMsg =
+        err.response?.data?.message ||
+        err.response?.data?.errors?.join(', ') ||
+        'Server failed to process the request. Please verify unique email and membership ID.';
+      setFormApiError(apiMsg);
+    } finally {
+      setFormSubmitting(false);
+    }
+  };
+
+  // Delete (DELETE /api/members/:id)
+  const handleDelete = async (member) => {
+    const memberId = member._id || member.id;
+    const confirmMessage = `Are you sure you want to delete member "${member.name}" (${member.membershipId || member.email}) from the database?`;
+
+    if (!window.confirm(confirmMessage)) {
+      return;
+    }
+
+    try {
+      await memberService.deleteMember(memberId);
+      setNotification(`Member "${member.name}" was permanently removed from MongoDB.`);
+      await loadMembers();
+      setTimeout(() => setNotification(''), 5000);
+    } catch (err) {
+      console.error('Failed to delete member:', err);
+      alert(
+        err.response?.data?.message ||
+        'Failed to delete member. Please verify server connection.'
+      );
+    }
+  };
+
+  const handleEditClick = (member) => {
+    setEditingMember(member);
+    setFormData({
+      membershipId: member.membershipId || '',
+      name: member.name || '',
+      email: member.email || '',
+      department: member.department || '',
+      role: member.role || 'Student',
+      phone: member.phone || '',
+      status: member.status || 'Active',
+    });
+    setFormErrors({});
+    setFormApiError('');
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleOpenAddForm = () => {
+    setEditingMember(null);
+    setFormData(INITIAL_MEMBER_FORM);
+    setFormErrors({});
+    setFormApiError('');
+    setShowForm(true);
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setEditingMember(null);
+    setFormData(INITIAL_MEMBER_FORM);
+    setFormErrors({});
+    setFormApiError('');
   };
 
   const handleReset = () => {
-    setFormData(INITIAL_MEMBER_FORM);
+    if (editingMember) {
+      setFormData({
+        membershipId: editingMember.membershipId || '',
+        name: editingMember.name || '',
+        email: editingMember.email || '',
+        department: editingMember.department || '',
+        role: editingMember.role || 'Student',
+        phone: editingMember.phone || '',
+        status: editingMember.status || 'Active',
+      });
+    } else {
+      setFormData(INITIAL_MEMBER_FORM);
+    }
     setFormErrors({});
+    setFormApiError('');
   };
 
   const filteredMembers = membersList.filter((m) => {
+    const term = searchTerm.toLowerCase();
     const matchesSearch =
-      m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      m.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      m.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      m.department.toLowerCase().includes(searchTerm.toLowerCase());
+      (m.name && m.name.toLowerCase().includes(term)) ||
+      (m.email && m.email.toLowerCase().includes(term)) ||
+      (m.membershipId && m.membershipId.toLowerCase().includes(term)) ||
+      (m.department && m.department.toLowerCase().includes(term));
     const matchesRole = roleFilter === 'All' || m.role === roleFilter;
     return matchesSearch && matchesRole;
   });
@@ -124,23 +287,32 @@ export default function Members() {
     <div>
       <PageTitle
         title="Member Management"
-        subtitle={`Total registered members: ${membersList.length} • Directory listings: ${filteredMembers.length} • Sprint 10 Controlled Forms`}
-        badge={`${filteredMembers.length} Members`}
+        subtitle={`Connected to MongoDB Atlas API • Displaying ${filteredMembers.length} of ${membersList.length} registered members`}
+        badge={`${filteredMembers.length} Active Records`}
         icon={Users}
       >
-        <Button
-          icon={showAddForm ? X : UserPlus}
-          variant={showAddForm ? 'secondary' : 'primary'}
-          onClick={() => {
-            setShowAddForm((prev) => !prev);
-            if (!showAddForm) handleReset();
-          }}
-        >
-          {showAddForm ? 'Close Form' : 'Register Member'}
-        </Button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <Button
+            icon={RefreshCw}
+            variant="secondary"
+            onClick={loadMembers}
+            disabled={loading}
+            title="Refresh from MongoDB"
+          >
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </Button>
+
+          <Button
+            icon={showForm ? X : UserPlus}
+            variant={showForm ? 'secondary' : 'primary'}
+            onClick={showForm ? handleCloseForm : handleOpenAddForm}
+          >
+            {showForm ? 'Close Form' : 'Register Member'}
+          </Button>
+        </div>
       </PageTitle>
 
-      {/* Conditional Success Alert */}
+      {/* Success Notification */}
       {notification && (
         <div
           style={{
@@ -161,15 +333,67 @@ export default function Members() {
         </div>
       )}
 
-      {/* Controlled Member Registration Form */}
-      {showAddForm && (
+      {/* Error Banner */}
+      {error && (
+        <div
+          style={{
+            backgroundColor: '#fee2e2',
+            color: '#991b1b',
+            border: '1px solid #fecaca',
+            borderRadius: 'var(--radius-sm)',
+            padding: '14px 18px',
+            marginBottom: '20px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <AlertTriangle size={20} />
+            <div>
+              <strong>Backend Connection Issue: </strong>
+              <span>{error}</span>
+            </div>
+          </div>
+          <Button size="sm" variant="secondary" onClick={loadMembers} icon={RefreshCw}>
+            Retry
+          </Button>
+        </div>
+      )}
+
+      {/* Create / Edit Member Form */}
+      {showForm && (
         <Card
-          title="Register New Library Member"
-          subtitle="All inputs are controlled components with real-time validation and error feedback."
-          badge="Registration Form"
+          title={editingMember ? `Edit Member: "${editingMember.name}"` : 'Register New Library Member'}
+          subtitle={
+            editingMember
+              ? 'Submitting this form executes a PUT request to update member data in MongoDB Atlas.'
+              : 'Submitting this form executes a POST request to persist a new member document in MongoDB Atlas.'
+          }
+          badge={editingMember ? 'PUT /api/members/:id' : 'POST /api/members'}
           headerIcon={UserCheck}
         >
-          <form onSubmit={handleRegisterMember} noValidate>
+          {formApiError && (
+            <div
+              style={{
+                backgroundColor: '#fee2e2',
+                color: '#b91c1c',
+                padding: '10px 14px',
+                borderRadius: 'var(--radius-sm)',
+                marginBottom: '16px',
+                fontSize: '0.875rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <AlertTriangle size={16} />
+              <span>{formApiError}</span>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} noValidate>
             <div
               style={{
                 display: 'grid',
@@ -177,6 +401,19 @@ export default function Members() {
                 gap: '16px',
               }}
             >
+              {/* Membership ID */}
+              <Input
+                id="member-id"
+                name="membershipId"
+                label="Membership ID (Optional)"
+                placeholder="e.g. MEM-007 (Auto-generated if empty)"
+                value={formData.membershipId}
+                onChange={handleInputChange}
+                error={formErrors.membershipId}
+                disabled={!!editingMember}
+              />
+
+              {/* Full Name */}
               <Input
                 id="member-name"
                 name="name"
@@ -188,6 +425,7 @@ export default function Members() {
                 required
               />
 
+              {/* Email */}
               <Input
                 id="member-email"
                 name="email"
@@ -200,27 +438,19 @@ export default function Members() {
                 required
               />
 
+              {/* Department */}
               <Input
                 id="member-dept"
                 name="department"
                 label="Academic Department"
-                placeholder="e.g. Data Science & AI"
+                placeholder="e.g. Computer Science"
                 value={formData.department}
                 onChange={handleInputChange}
                 error={formErrors.department}
                 required
               />
 
-              <Input
-                id="member-phone"
-                name="phone"
-                label="Contact Phone"
-                placeholder="e.g. 9876543210"
-                value={formData.phone}
-                onChange={handleInputChange}
-                error={formErrors.phone}
-              />
-
+              {/* Role Select */}
               <div className="form-group" style={{ marginBottom: '16px' }}>
                 <label
                   htmlFor="member-role"
@@ -232,7 +462,7 @@ export default function Members() {
                     color: 'var(--text-main)',
                   }}
                 >
-                  Membership Role <span style={{ color: 'var(--danger)' }}>*</span>
+                  Member Role <span style={{ color: 'var(--danger)' }}>*</span>
                 </label>
                 <select
                   id="member-role"
@@ -248,13 +478,63 @@ export default function Members() {
                     fontSize: '0.875rem',
                   }}
                 >
-                  <option value="Student">Student (Limit: 5 books)</option>
-                  <option value="Faculty">Faculty (Limit: 10 books)</option>
-                  <option value="Staff">Staff (Limit: 3 books)</option>
+                  {ROLES.filter((r) => r !== 'All').map((role) => (
+                    <option key={role} value={role}>
+                      {role}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Phone */}
+              <Input
+                id="member-phone"
+                name="phone"
+                label="Phone Number"
+                placeholder="e.g. 9876543210"
+                value={formData.phone}
+                onChange={handleInputChange}
+                error={formErrors.phone}
+              />
+
+              {/* Status Select */}
+              <div className="form-group" style={{ marginBottom: '16px' }}>
+                <label
+                  htmlFor="member-status"
+                  style={{
+                    display: 'block',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    marginBottom: '6px',
+                    color: 'var(--text-main)',
+                  }}
+                >
+                  Membership Status <span style={{ color: 'var(--danger)' }}>*</span>
+                </label>
+                <select
+                  id="member-status"
+                  name="status"
+                  className="form-input"
+                  value={formData.status}
+                  onChange={handleInputChange}
+                  style={{
+                    width: '100%',
+                    padding: '10px 14px',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid var(--border-color)',
+                    fontSize: '0.875rem',
+                  }}
+                >
+                  {STATUSES.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
 
+            {/* Form Actions */}
             <div
               style={{
                 display: 'flex',
@@ -265,13 +545,24 @@ export default function Members() {
                 flexWrap: 'wrap',
               }}
             >
-              <Button type="submit" variant="primary" icon={UserPlus}>
-                Register Member
+              <Button
+                type="submit"
+                variant="primary"
+                icon={editingMember ? Check : UserPlus}
+                disabled={formSubmitting}
+              >
+                {formSubmitting
+                  ? editingMember
+                    ? 'Updating in MongoDB...'
+                    : 'Saving to MongoDB...'
+                  : editingMember
+                  ? 'Update Member'
+                  : 'Register Member'}
               </Button>
               <Button type="button" variant="secondary" icon={RotateCcw} onClick={handleReset}>
-                Reset Form
+                Reset
               </Button>
-              <Button type="button" variant="ghost" onClick={() => setShowAddForm(false)}>
+              <Button type="button" variant="ghost" onClick={handleCloseForm}>
                 Cancel
               </Button>
             </div>
@@ -284,24 +575,34 @@ export default function Members() {
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ flex: 1, minWidth: '240px' }}>
             <Input
-              placeholder="Search member by name, ID, department or email..."
+              placeholder="Search by name, email, department, or ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               icon={Search}
               style={{ margin: 0 }}
             />
           </div>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Role Filter:</span>
-            {['All', 'Student', 'Faculty'].map((r) => (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <span
+              style={{
+                fontSize: '0.85rem',
+                color: 'var(--text-muted)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              <Filter size={15} /> Role:
+            </span>
+            {ROLES.map((role) => (
               <Button
-                key={r}
+                key={role}
                 size="sm"
-                variant={roleFilter === r ? 'primary' : 'secondary'}
-                active={roleFilter === r}
-                onClick={() => setRoleFilter(r)}
+                variant={roleFilter === role ? 'primary' : 'secondary'}
+                active={roleFilter === role}
+                onClick={() => setRoleFilter(role)}
               >
-                {r}
+                {role}
               </Button>
             ))}
           </div>
@@ -310,46 +611,113 @@ export default function Members() {
 
       {/* Members Table */}
       <Card
-        title={`Registered Members (${filteredMembers.length})`}
-        subtitle="Active borrowing rights and university identification"
-        badge={filteredMembers.length > 0 ? 'Data Available' : 'No Data'}
+        title={`Registered Members Directory (${filteredMembers.length} records)`}
+        subtitle={
+          roleFilter !== 'All'
+            ? `Filtered by role: ${roleFilter}`
+            : 'All member records stored persistently in MongoDB Atlas members collection'
+        }
+        badge={loading ? 'Fetching...' : `${filteredMembers.length} Active`}
       >
-        {filteredMembers.length > 0 ? (
+        {loading ? (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '60px 20px',
+              color: 'var(--text-muted)',
+            }}
+          >
+            <Loader2
+              size={36}
+              style={{
+                animation: 'spin 1s linear infinite',
+                color: 'var(--primary)',
+                margin: '0 auto 12px',
+              }}
+            />
+            <h4 style={{ fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>
+              Loading members from MongoDB Atlas...
+            </h4>
+            <p style={{ fontSize: '0.875rem' }}>Communicating via Express REST API service layer</p>
+          </div>
+        ) : filteredMembers.length > 0 ? (
           <div className="table-container">
             <table className="data-table">
               <thead>
                 <tr>
                   <th>Member ID</th>
-                  <th>Name</th>
+                  <th>Full Name</th>
                   <th>Email</th>
                   <th>Department</th>
                   <th>Role</th>
-                  <th>Books Borrowed</th>
                   <th>Status</th>
+                  <th style={{ textAlign: 'center' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredMembers.map((m) => (
-                  <tr key={m.id}>
-                    <td style={{ fontWeight: 600, color: 'var(--primary)' }}>{m.id}</td>
-                    <td style={{ fontWeight: 500 }}>{m.name}</td>
-                    <td>{m.email}</td>
-                    <td>{m.department}</td>
-                    <td>
-                      <span className="badge badge-primary">{m.role}</span>
-                    </td>
-                    <td style={{ fontWeight: 600 }}>{m.borrowedCount} / 5</td>
-                    <td>
-                      <span
-                        className={`badge ${
-                          m.status === 'Active' ? 'badge-success' : 'badge-danger'
-                        }`}
-                      >
-                        {m.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
+                {filteredMembers.map((member) => {
+                  const id = member._id || member.id;
+                  return (
+                    <tr key={id}>
+                      <td style={{ fontWeight: 600, color: 'var(--primary)', fontFamily: 'monospace' }}>
+                        {member.membershipId || id.slice(-6).toUpperCase()}
+                      </td>
+                      <td style={{ fontWeight: 500, color: 'var(--text-main)' }}>
+                        {member.name}
+                      </td>
+                      <td style={{ color: 'var(--text-muted)' }}>{member.email}</td>
+                      <td>{member.department}</td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            member.role === 'Faculty'
+                              ? 'badge-primary'
+                              : member.role === 'Student'
+                              ? 'badge-info'
+                              : 'badge-secondary'
+                          }`}
+                        >
+                          {member.role}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          className={`badge ${
+                            member.status === 'Active'
+                              ? 'badge-success'
+                              : member.status === 'Suspended'
+                              ? 'badge-warning'
+                              : 'badge-danger'
+                          }`}
+                        >
+                          {member.status || 'Active'}
+                        </span>
+                      </td>
+                      <td style={{ textAlign: 'center' }}>
+                        <div style={{ display: 'inline-flex', gap: '6px' }}>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            icon={Pencil}
+                            onClick={() => handleEditClick(member)}
+                            title="Edit member details (PUT)"
+                          >
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            icon={Trash2}
+                            onClick={() => handleDelete(member)}
+                            title="Delete member document (DELETE)"
+                          >
+                            Delete
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -366,18 +734,22 @@ export default function Members() {
             <AlertTriangle size={36} style={{ color: 'var(--text-muted)', marginBottom: '8px' }} />
             <h4 style={{ fontWeight: 600, marginBottom: '4px' }}>No Members Found</h4>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginBottom: '16px' }}>
-              No member accounts matched query "{searchTerm}" under role "{roleFilter}".
+              {membersList.length === 0
+                ? 'Your MongoDB members collection is currently empty. Click "Register Member" above to add your first member!'
+                : `No members match "${searchTerm}" in role "${roleFilter}".`}
             </p>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => {
-                setSearchTerm('');
-                setRoleFilter('All');
-              }}
-            >
-              Reset Search & Filter
-            </Button>
+            {membersList.length > 0 && (
+              <Button
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  setSearchTerm('');
+                  setRoleFilter('All');
+                }}
+              >
+                Reset Search & Filters
+              </Button>
+            )}
           </div>
         )}
       </Card>

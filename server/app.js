@@ -4,6 +4,7 @@ const requestLogger = require('./middleware/requestLogger');
 const errorHandler = require('./middleware/errorHandler');
 const testRoutes = require('./routes/testRoutes');
 const bookRoutes = require('./routes/bookRoutes');
+const memberRoutes = require('./routes/memberRoutes');
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 // Mount Routes
 app.use('/api', testRoutes);
 app.use('/api/books', bookRoutes);
+app.use('/api/members', memberRoutes);
 
 // Error Handling Middleware
 app.use(errorHandler);
