@@ -118,7 +118,7 @@ const updateBook = async (req, res, next) => {
     }
 
     const updatedBook = await Book.findByIdAndUpdate(id, req.body, {
-      new: true,
+      returnDocument: 'after',
       runValidators: true,
     });
 

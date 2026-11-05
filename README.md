@@ -9,7 +9,7 @@ The Library Management System is a full-stack MERN web application designed to m
 
 ---
 
-## Sprints Summary (Sprint 1 to 14)
+## Sprints Summary (Sprint 1 to 15)
 
 - **Sprint 1 — Project Foundation & Development Environment:** Workspace initialization, Git version control, software setup.
 - **Sprint 2 — Requirements Analysis:** User roles, functional & non-functional requirements.
@@ -25,6 +25,7 @@ The Library Management System is a full-stack MERN web application designed to m
 - **Sprint 12 — Express Routing and Middleware:** RESTful routing for the Books module (`GET`, `POST`, `PUT`, `DELETE`), route parameters (`:id`), controller separation, custom request logger middleware, and `next()` pipeline control.
 - **Sprint 13 — MongoDB Setup and Backend Database Connection:** Cloud MongoDB Atlas provision (`LibraryManagementDB`), `books` collection, Mongoose ODM installation, `.env` configuration, database connection module (`server/config/database.js`), and REST API verification.
 - **Sprint 14 — Mongoose Schemas and Models:** Mongoose Schema and Model creation for the Book entity (`server/models/Book.js`), field validation rules, unique ISBN indexing, controller integration, and live database persistence.
+- **Sprint 15 — Implementing CRUD REST APIs with MongoDB:** Full database-driven CRUD operations for books (`POST`, `GET`, `GET /:id`, `PUT /:id`, `DELETE /:id`) connected to MongoDB Atlas with Mongoose methods, semantic HTTP status codes (`200`, `201`, `400`, `404`, `500`), and defensive error handling.
 
 ---
 
@@ -46,6 +47,7 @@ Complete documentation, guides, and practical specifications for all sprints are
 - [Sprint 12: Express Routing & Middleware](./docs/SPRINT-12.md) & [Routing and Middleware](./docs/routing-and-middleware.md)
 - [Sprint 13: MongoDB Setup & Database Connection](./docs/SPRINT-13.md)
 - [Sprint 14: Mongoose Schemas & Models](./docs/SPRINT-14.md) & [Book Schema Design](./docs/book-schema-design.md)
+- [Sprint 15: Implementing CRUD REST APIs with MongoDB](./docs/SPRINT-15.md)
 
 ---
 
