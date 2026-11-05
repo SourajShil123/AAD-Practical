@@ -244,9 +244,8 @@ The `bookController.js` includes defensive checks for all common failure modes:
 
 ---
 
-## 9. Reflection & Viva Solutions
+## 9. Architectural Reflection
 
-### Reflection Questions
 1. **What is CRUD and why is it important in database applications?**
    - CRUD stands for Create, Read, Update, and Delete. It constitutes the core lifecycle of data persistence, allowing users to register, query, modify, and retire information in any real-world production system.
 2. **Why does the controller use the Mongoose model instead of communicating directly with MongoDB?**
@@ -258,34 +257,11 @@ The `bookController.js` includes defensive checks for all common failure modes:
 5. **Why is it useful to test an API independently using Postman before connecting it to React?**
    - Decoupled testing isolates backend and database issues from frontend UI/state bugs, ensuring that data contracts, validations, and status codes work reliably before introducing UI complexity.
 
-### Viva Questions
-1. **What is CRUD?**
-   - The four fundamental operations of persistent storage: Create (POST), Read (GET), Update (PUT), and Delete (DELETE).
-2. **What is a REST API?**
-   - An architectural style for networked applications using standard HTTP methods, stateless requests, resource-based URLs, and standard payload formats (typically JSON).
-3. **What is the purpose of the POST method?**
-   - To submit data to be processed and stored as a new document or resource in the database.
-4. **What is the difference between PUT and POST?**
-   - `POST` creates a new resource where the server assigns the ID and URI. `PUT` modifies or replaces an existing resource at an identified URI.
-5. **What is the purpose of the GET method?**
-   - To retrieve data representation from the server without modifying server or database state.
-6. **What does DELETE do?**
-   - Removes the specified resource document from the database collection.
-7. **What is a route parameter?**
-   - A variable part of the URL path prefixed with a colon (e.g., `:id` in `/api/books/:id`), accessed through `req.params`.
-8. **Why do we use Mongoose for CRUD operations?**
-   - Mongoose provides structured schemas, validation, type casting, default values, query building, and promises, making database interactions safer and cleaner.
-9. **What does HTTP status code 201 mean?**
-   - Created: indicates that the request succeeded and resulted in the creation of a new resource.
-10. **What does HTTP status code 404 mean?**
-    - Not Found: indicates that the requested resource could not be found on the server.
-11. **Why should an API handle invalid requests instead of allowing the server to crash?**
-    - Unhandled exceptions terminate the Node.js event loop, taking down the entire service for all active users. Defensive error handling ensures continuous service uptime and sends helpful diagnostic feedback.
-12. **What is the difference between retrieving all documents and retrieving one document by ID?**
-    - `find()` returns an array containing all matching documents (or empty array `[]`), whereas `findById(id)` queries by primary key `_id` and returns either a single document object or `null`.
-
 ---
 
-## 10. Sprint Outcome
-The LibMaster backend is now fully operational with an enterprise-grade CRUD REST API connected directly to MongoDB Atlas. All five primary operations (`POST`, `GET`, `GET /:id`, `PUT`, `DELETE`) are verified, resilient to malformed inputs, and adhere to RESTful conventions.
+## 10. Conclusion
+
+In Sprint 15, the Library Management System successfully transitioned from temporary in-memory responses to a robust, enterprise-grade CRUD REST API connected directly to MongoDB Atlas. All five primary operations—Create (`POST`), Read All (`GET`), Read One (`GET /:id`), Update (`PUT /:id`), and Delete (`DELETE /:id`)—were fully implemented, optimized with Mongoose 9.x methods, and thoroughly verified against the live cloud database. 
+
+The API enforces strict schema validations, handles edge cases such as malformed ObjectIds and duplicate ISBN collisions defensively without crashing the server process, and returns semantically accurate HTTP status codes (`200`, `201`, `400`, `404`, `500`). This completes the core backend persistence layer for the Books module, establishing a reliable and scalable foundation for client-side React integration in subsequent sprints.
 
